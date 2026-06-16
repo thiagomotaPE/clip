@@ -218,7 +218,7 @@ ShowSearchBar() {
     editInput.SetFont("s16", "Segoe UI")
 
     gSearch.SetFont("s12 c" ColorSub, "Segoe UI")
-    gSearch.Add("Text", "w680", "script name  •  all  •  create  •  update <name>  •  delete <name>")
+    gSearch.Add("Text", "w680", "script name  •  all  •  create  •  update <name>  •  delete <name>  •  view <name>")
 
     editInput.OnEvent("Change", (*) => UpdateSuggestions())
     gSearch.OnEvent("Close", (*) => CloseSearchBar())
@@ -266,6 +266,8 @@ ProcessSearch() {
         OpenEditor("update", Trim(SubStr(text, 8)))
     else if (SubStr(lower, 1, 7) = "delete ")
         DeleteScript(Trim(SubStr(text, 8)))
+    else if (SubStr(lower, 1, 5) = "view ")
+        ViewScript(Trim(SubStr(text, 6)))
     else
         CopyScript(text)
 }
@@ -331,7 +333,7 @@ UpdateSuggestions() {
     lower := StrLower(text)
 
     ; Skip suggestions for special commands
-    if (lower = "all" || lower = "create" || SubStr(lower, 1, 7) = "update " || SubStr(lower, 1, 7) = "delete ") {
+    if (lower = "all" || lower = "create" || SubStr(lower, 1, 7) = "update " || SubStr(lower, 1, 7) = "delete " || SubStr(lower, 1, 5) = "view ") {
         CloseSuggestions()
         return
     }
@@ -538,6 +540,39 @@ DeleteScript(name) {
     } else {
         ShowToast("✗ Not found: " name)
     }
+}
+
+ViewScript(name) {
+    data := LoadData()
+    if !data.Has(name) {
+        ShowToast("✗ Not found: " name)
+        return
+    }
+
+    info := data[name]
+    g := Gui("+AlwaysOnTop", "View Script: " name)
+    g.BackColor := ColorBg
+    g.MarginX := 18
+    g.MarginY := 14
+    g.OnEvent("Escape", (*) => g.Destroy())
+
+    g.SetFont("s10 c" ColorSub, "Segoe UI")
+    g.Add("Text",, "NAME")
+    g.SetFont("s12 c" ColorText, "Segoe UI")
+    g.Add("Text", "y+4 w800", name)
+
+    g.SetFont("s10 c" ColorSub, "Segoe UI")
+    g.Add("Text", "y+8", "DESCRIPTION")
+    g.SetFont("s12 c" ColorText, "Segoe UI")
+    g.Add("Text", "y+4 w800", info.Has("description") ? info["description"] : "")
+
+    g.SetFont("s10 c" ColorSub, "Segoe UI")
+    g.Add("Text", "y+10", "CONTENT")
+    g.SetFont("s11 c" ColorText, "Segoe UI")
+    contentEdit := g.Add("Edit", "w800 h360 ReadOnly Multi Background" ColorBgEdit " c" ColorText " -E0x200", info.Has("content") ? info["content"] : "")
+
+    g.Show("w840")
+    SetDarkTitleBar(g.Hwnd)
 }
 
 ; ===================== TRIGGERS =====================

@@ -22,6 +22,7 @@ Press `Alt + Space` to open the search bar, then type:
 | Command | Action |
 |---|---|
 | `script name` + Enter | Copies the script content to clipboard |
+| `view <name>` | Opens a window to preview the script |
 | `all` | Lists all saved scripts |
 | `create` | Opens the editor to create a new script |
 | `update <name>` | Opens the editor to update a script |
