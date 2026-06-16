@@ -573,6 +573,9 @@ ViewScript(name) {
 
     g.Show("w840")
     SetDarkTitleBar(g.Hwnd)
+
+    ; Remove automatic selection in the preview field after open
+    SetTimer(() => DllCall("user32\SendMessageW", "Ptr", contentEdit.Hwnd, "UInt", 0x00B1, "Ptr", 0, "Ptr", 0), -50)
 }
 
 ; ===================== TRIGGERS =====================
